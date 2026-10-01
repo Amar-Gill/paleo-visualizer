@@ -15,7 +15,7 @@ export function Viewer({ species }: { species: Species[] }) {
   return (
     <div className="relative flex-1">
       <div className="absolute inset-0">
-        <GlobeScene selected={selected} />
+        <GlobeScene selected={selected} onClose={() => setSelected(null)} />
       </div>
       {/* pointer-events-none lets drags reach the globe; the dropdown opts
           back in so it stays clickable. */}

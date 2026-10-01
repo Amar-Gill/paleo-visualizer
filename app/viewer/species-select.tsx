@@ -40,13 +40,6 @@ export function SpeciesSelect({
           </option>
         ))}
       </select>
-
-      {selected && (
-        <p className="mt-2 text-sm text-foreground/60">
-          <span className="capitalize">{selected.period}</span> ·{" "}
-          {selected.lat.toFixed(2)}, {selected.lng.toFixed(2)}
-        </p>
-      )}
     </div>
   );
 }
