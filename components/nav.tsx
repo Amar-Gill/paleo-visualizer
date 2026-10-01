@@ -14,8 +14,11 @@ export async function Nav() {
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/viewer", label: "Viewer" },
-    ...(isAuthenticated ? [{ href: "/todos", label: "Todos" }] : []),
+    ,
+    ...(isAuthenticated ? [
+      { href: "/viewer", label: "Viewer" },
+      { href: "/todos", label: "Todos" }
+    ] : []),
   ];
 
   return (
