@@ -3,7 +3,14 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
-import { MathUtils, Spherical, type EventDispatcher } from "three";
+import {
+  DoubleSide,
+  MathUtils,
+  Spherical,
+  type EventDispatcher,
+  type Mesh,
+  type MeshBasicMaterial,
+} from "three";
 
 import type { Species } from "@/db/schema";
 
@@ -20,10 +27,17 @@ const GLOBE_IMAGE_URL =
 
 // r3f-globe re-applies a prop whenever its identity changes, so these stay
 // outside the component to keep their references stable between renders.
+const MARKER_COLOR = "#ff3b30";
+const GLOBE_RADIUS = 100;
+
 const NO_SPECIES: Species[] = [];
-const markerColor = () => "#ff3b30";
+const markerColor = () => MARKER_COLOR;
 
 const FLIGHT_MS = 1200;
+
+// One pulse of the halo, in seconds.
+const PULSE_SECONDS = 1.8;
+const PULSE_MAX_SCALE = 3.5;
 
 // R3F types state.controls as a bare EventDispatcher; this is the part of
 // OrbitControls we actually touch.
@@ -111,6 +125,57 @@ function FlyToSpecies({ target }: { target: Species | null }) {
   return null;
 }
 
+/**
+ * A halo that repeatedly expands and fades at the selected species, to draw
+ * the eye to the pin.
+ *
+ * Driven by R3F's own frame loop rather than three-globe's rings layer,
+ * because three-globe's internal ticker is paused by React StrictMode in dev.
+ */
+function SelectionPulse({ target }: { target: Species | null }) {
+  const ring = useRef<Mesh>(null);
+  const material = useRef<MeshBasicMaterial>(null);
+
+  useEffect(() => {
+    if (!target || !ring.current) return;
+
+    // Sit just above the surface, matching the pin's coordinates.
+    ring.current.position.setFromSpherical(
+      new Spherical(
+        GLOBE_RADIUS * 1.01,
+        MathUtils.degToRad(90 - target.lat),
+        MathUtils.degToRad(target.lng),
+      ),
+    );
+    // Ring geometry faces +Z, so aiming it at the centre lays it flat on the
+    // surface. Same trick three-globe uses to stand its points up.
+    ring.current.lookAt(0, 0, 0);
+  }, [target]);
+
+  useFrame((state) => {
+    if (!ring.current || !material.current) return;
+
+    const progress = (state.clock.getElapsedTime() % PULSE_SECONDS) / PULSE_SECONDS;
+    ring.current.scale.setScalar(1 + progress * (PULSE_MAX_SCALE - 1));
+    material.current.opacity = 0.7 * (1 - progress);
+  });
+
+  if (!target) return null;
+
+  return (
+    <mesh ref={ring}>
+      <ringGeometry args={[3, 4.2, 64]} />
+      <meshBasicMaterial
+        ref={material}
+        color={MARKER_COLOR}
+        transparent
+        side={DoubleSide}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
 // Fills its parent element, so the parent must have an explicit size.
 export function GlobeScene({ selected }: { selected: Species | null }) {
   // Species rows already expose `lat`/`lng`, which are the accessors
@@ -135,7 +200,12 @@ export function GlobeScene({ selected }: { selected: Species | null }) {
           animateIn={false}
           pointsData={pointsData}
           pointColor={markerColor}
-          pointRadius={0.8}
+          pointRadius={1.6}
+          pointAltitude={0.2}
+          // Without this the pin is positioned by a tween, and three-globe's
+          // ticker is paused by StrictMode in dev, which would leave the pin
+          // stuck at the globe's centre. 0 applies it immediately instead.
+          pointsTransitionDuration={0}
         />
       </Suspense>
 
@@ -149,6 +219,7 @@ export function GlobeScene({ selected }: { selected: Species | null }) {
         maxDistance={800}
       />
 
+      <SelectionPulse target={selected} />
       <FlyToSpecies target={selected} />
     </Canvas>
   );
