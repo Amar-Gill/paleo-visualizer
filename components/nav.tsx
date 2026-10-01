@@ -14,7 +14,6 @@ export async function Nav() {
 
   const links = [
     { href: "/", label: "Home" },
-    ,
     ...(isAuthenticated ? [
       { href: "/viewer", label: "Viewer" },
       { href: "/todos", label: "Todos" }

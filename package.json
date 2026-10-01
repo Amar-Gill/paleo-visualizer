@@ -20,6 +20,7 @@
     "drizzle-kit": "^0.31.1",
     "drizzle-orm": "^0.44.2",
     "next": "15.3.6",
+    "r3f-globe": "^1.6.0",
     "react": "^19.0.1",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.0.0",
