@@ -1,0 +1,16 @@
+diff --git a/node_modules/r3f-globe/dist/r3f-globe.mjs b/node_modules/r3f-globe/dist/r3f-globe.mjs
+index 520e64c..c2303b0 100644
+--- a/node_modules/r3f-globe/dist/r3f-globe.mjs
++++ b/node_modules/r3f-globe/dist/r3f-globe.mjs
+@@ -145,7 +145,10 @@ function fromThree(ThreeComponent) {
+     }, []);
+     useEffect(function () {
+       // invoke destructor on unmount, if it exists
+-      return threeObj._destructor instanceof Function ? threeObj._destructor : undefined;
++      // Call it as a method so `this` is bound (ThreeGlobe's _destructor reads it).
++      return threeObj._destructor instanceof Function ? function () {
++        return threeObj._destructor();
++      } : undefined;
+     }, [threeObj]);
+ 
+     // Call a component method

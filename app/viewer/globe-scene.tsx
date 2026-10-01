@@ -7,6 +7,9 @@ import { lazy, Suspense } from "react";
 // three-globe reads `window` as soon as it's imported, which crashes Next.js's
 // server render. Canvas children only ever render in the browser, so loading
 // the globe lazily inside the Canvas keeps it off the server entirely.
+//
+// r3f-globe 1.6.0 throws on unmount ("this is undefined"). It's fixed by
+// patches/r3f-globe+1.6.0.patch, which patch-package applies on `npm install`.
 const R3fGlobe = lazy(() => import("r3f-globe"));
 
 // Fills its parent element, so the parent must have an explicit size.
