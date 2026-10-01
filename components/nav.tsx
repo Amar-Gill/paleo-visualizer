@@ -16,7 +16,6 @@ export async function Nav() {
     { href: "/", label: "Home" },
     ...(isAuthenticated ? [
       { href: "/viewer", label: "Viewer" },
-      { href: "/todos", label: "Todos" }
     ] : []),
   ];
 

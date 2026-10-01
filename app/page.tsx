@@ -18,13 +18,13 @@ export default async function HomePage() {
         the todos page to see your database in action.
       </p>
       {isAuthenticated ? (
-        <Link href="/todos" className={ctaClassName}>
-          Go to todos <span aria-hidden="true">&rarr;</span>
+        <Link href="/viewer" className={ctaClassName}>
+          Go to viewer <span aria-hidden="true">&rarr;</span>
         </Link>
       ) : (
-        <SignInButton forceRedirectUrl="/todos">
+        <SignInButton forceRedirectUrl="/viewer">
           <button type="button" className={ctaClassName}>
-            Sign in to view todos
+            Sign in to view species
           </button>
         </SignInButton>
       )}
