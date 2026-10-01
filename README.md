@@ -32,11 +32,18 @@ This repository is a starter template for building a Next.js application with Tu
    cp .env.example .env
    ```
 
-   Fill in your Turso database credentials:
+   The example `.env` file uses a local SQLite database.
+
+   Fill in your Clerk credentials:
 
    ```
-   TURSO_DATABASE_URL=your_turso_database_url
-   TURSO_AUTH_TOKEN=your_turso_auth_token
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+   NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+   NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+   CLERK_SECRET_KEY=
    ```
 
 4. Set up your database:
@@ -44,6 +51,7 @@ This repository is a starter template for building a Next.js application with Tu
    ```bash
    npm run db:generate
    npm run db:push
+   npm run db:seed
    ```
 
 5. Start the development server:
@@ -58,6 +66,7 @@ This project uses Drizzle ORM for database operations. Here are the available co
 - `npm run db:generate` - Generate migration files from schema changes
 - `npm run db:push` - Push schema changes directly to the database (use with caution)
 - `npm run db:migrate` - Run migrations against the database
+- `npm run db:seed` - Seed the database with initial data
 - `npm run db:studio` - Open the Drizzle Studio for database management
 
 ## Need Help?
